@@ -87,13 +87,13 @@ services:
       - source: apache_conf
         target: /etc/apache2/apache2.conf
         mode:0444
-	
+
 networks:
   backend:
     driver: overlay
   frontend:
     driver: overlay
-  
+
 configs:
   mysql_init:
     file: $HOME/atomy/mysql_init/mysql_init.sql
@@ -105,8 +105,6 @@ configs:
     file: $HOME/atomy/apache_conf/000-default.conf
   apache_conf:
     file: $HOME/atomy/apache_conf/apache2.conf
-  
-    
 
 volumes:
   db-data:
