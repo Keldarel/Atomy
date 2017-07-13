@@ -1,0 +1,40 @@
+db:
+  image: mysql:latest
+  environment:
+    MYSQL_ROOT_PASSWORD: miaoumiaou
+    MYSQL_DATABASE: bdchatons
+    MYSQL_USER: petitchat
+    MYSQL_PASSWORD: miaou
+  volumes:
+    - /home/ubuntu/atomy/mysql_conf:/etc/mysql/conf.d
+    - /home/ubuntu/atomy/mysql_init:/docker-entrypoint-initdb.d
+  container_name: "db"
+	
+sample:
+   environment:
+    JDBC_URL: jdbc:mysql://db:3306/bdchatons?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true
+    JDBC_USER: petitchat
+    JDBC_PASS: miaou
+   volumes:
+    - /home/ubuntu/atomy/webapps:/usr/local/tomcat/webapps
+   expose:
+    - "8009"
+   image: tomcat
+   container_name: "sample"
+   links:
+    - db
+
+apache:
+   volumes:
+    - /home/ubuntu/atomy/apache_startup.sh:/etc/apache2/apache_startup.sh
+    - /home/ubuntu/atomy/apache_logs:/var/log/apache2
+    - /home/ubuntu/atomy/apache_conf/jk.conf:/etc/apache2/mods-available/jk.conf
+    - /home/ubuntu/atomy/apache_conf/workers.properties:/etc/libapache2-mod-jk/workers.properties
+    - /home/ubuntu/atomy/apache_conf/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    - /home/ubuntu/atomy/apache_conf/apache2.conf:/etc/apache2/apache2.conf
+   ports:
+    - "80:80"
+   image: apache
+   container_name: "apache"
+   links:
+    - sample
